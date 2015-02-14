@@ -12,8 +12,11 @@ from __init__ import __author__, __version__
 
 class Scaffold(object):
     def __init__(self, cmd_args):
-        cmd_args['directory'] = path.realpath(cmd_args['directory'])
         cmd_args['package_name'] = cmd_args['name']
+        cmd_args['directory'] = path.realpath(cmd_args['directory'])
+        if path.basename(path.normpath(cmd_args['directory'])) != cmd_args['package_name']:
+            cmd_args['directory'] = path.join(cmd_args['directory'], cmd_args['package_name'])
+
         self.cmd_args = cmd_args
         # tuple(setattr(self, k, v) for k, v in locals() if not k.startswith('_'))  # Yay: Ruby!
         self.tree = self.gen_tree()
@@ -41,15 +44,16 @@ class Scaffold(object):
         if not self.cmd_args['single_file'] and not path.exists(self.tree[0]):
             mkdir(path.dirname(self.tree[0]))
 
-        templates_join = partial(path.join, 'templates')
+        templates_join = partial(path.join, path.dirname(path.realpath(__file__)), 'templates')
         for filepath in self.tree:
             dirname, filename = path.split(filepath)
             print(
-                u'Writing to: "{filename}" within: "{dirname}"\u2026'.format(dirname=dirname, filename=filename)
+                'Writing to: "{filename}" within: "{dirname}"...'.format(dirname=dirname, filename=filename)
             )
             # open(filepath, 'a+').close()  # touch
+            print('filename: ', filename, "self.cmd_args['name']: ", self.cmd_args['name'])
             open(filepath, 'w').write(Template(
-                open(templates_join('__init__.py') if filename == self.cmd_args['name']
+                open(templates_join('__init__.py') if filename[:-3] == self.cmd_args['name']
                      else templates_join(path.basename(filepath)), 'r').read()
             ).substitute(**self.cmd_args))
 
