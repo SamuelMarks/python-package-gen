@@ -1,2 +1,2 @@
-__author__ = '$author'
-__version__ = '$version'
+__author__ = '_0_author'
+__version__ = '_0_version'
