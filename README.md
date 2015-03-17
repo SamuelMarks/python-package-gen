@@ -12,6 +12,10 @@ Both provide tests (unittest) and support for:
 
     pip install git+https://github.com/SamuelMarks/python-package-gen#egg=python_package_gen
 
+Once installed you can run:
+
+    python -m python_package_gen.generate_scaffold
+
 ## Usage
 
     usage: generate_scaffold.py [-h] -n NAME [-a AUTHOR] [-d DESCRIPTION]
