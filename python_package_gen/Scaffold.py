@@ -6,7 +6,6 @@ from utils import OTemplate
 
 class Scaffold(object):
     def __init__(self, cmd_args):
-        print cmd_args
         cmd_args['package_name'] = cmd_args['name']
         cmd_args['output_directory'] = path.realpath(cmd_args['output_directory'])
         if path.basename(path.normpath(cmd_args['output_directory'])) != cmd_args['package_name']:
@@ -43,13 +42,13 @@ class Scaffold(object):
         templates_join = partial(path.join, path.dirname(path.realpath(__file__)), 'templates')
         for filepath in self.tree:
             dirname, filename = path.split(filepath)
-            print 'Writing to: "{filename}" within: "{dirname}"...'.format(dirname=dirname, filename=filename)
+            print 'Writing to: "{filename}" within: "{dirname}"...'.format(filename=filename, dirname=dirname)
             # open(filepath, 'a+').close()  # touch
             print 'filename: ', filename, "self.package_name: ", self.package_name
-            open(filepath, 'w').write(OTemplate(
-                open(templates_join('__init__.py') if filename[:-3] == self.package_name
-                     else templates_join(path.basename(filepath)), 'r').read()
-            ).substitute(**self.cmd_args))
+            with open(filepath, 'w') as f0:
+                with open(templates_join('__init__.py') if filename[:-3] == self.package_name
+                          else templates_join(path.basename(filepath)), 'r') as f1:
+                    f0.write(OTemplate(f1.read()).substitute(**self.cmd_args))
 
     def to_single_file(self):
         if not self.single_file:

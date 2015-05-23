@@ -14,7 +14,7 @@ if __name__ == '__main__':
     setup(
         name=package_name,
         author='Samuel Marks',
-        version='0.3.1',
+        version='0.3.2',
         test_suite=package_name + '.tests',
         packages=find_packages(),
         package_dir={package_name: package_name},
