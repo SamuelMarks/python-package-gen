@@ -12,9 +12,21 @@ Both provide tests (unittest) and support for:
 
     pip install git+https://github.com/SamuelMarks/python-package-gen#egg=python_package_gen
 
-Once installed you can run:
+## Example run
 
-    python -m python_package_gen.generate_scaffold
+    python -m python_package_gen -n bar -o bar
+
+### Generates
+
+    tree bar
+
+    bar
+    ├── bar
+    │   └── __init__.py
+    ├── requirements.txt
+    └── setup.py
+    
+    1 directory, 3 files
 
 ## Usage
 
