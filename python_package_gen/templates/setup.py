@@ -1,11 +1,21 @@
 from setuptools import setup, find_packages
+from itertools import imap, ifilter
+from os import path
+from ast import parse
 
 if __name__ == '__main__':
     package_name = '_0_package_name'
+
+    get_vals = lambda var0, var1: tuple(imap(lambda buf: next(imap(lambda e: e.value.s, parse(buf).body)),
+                                             ifilter(lambda line: line.startswith(var0) or line.startswith(var1), f)))
+
+    with open(path.join(package_name, '__init__.py')) as f:
+        __author__, __version__ = get_vals('__version__', '__author__')
+
     setup(
         name=package_name,
-        author='_0_author',
-        version='_0_version',
+        author=__author__,
+        version=__version__,
         test_suite=package_name + '.tests',
         packages=find_packages(),
         package_dir={package_name: package_name}
