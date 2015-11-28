@@ -6,8 +6,8 @@ from ast import parse
 if __name__ == '__main__':
     package_name = '_0_package_name'
 
-    get_vals = lambda var0, var1: tuple(imap(lambda buf: next(imap(lambda e: e.value.s, parse(buf).body)),
-                                             ifilter(lambda line: line.startswith(var0) or line.startswith(var1), f)))
+    get_vals = lambda var0, var1: imap(lambda buf: next(imap(lambda e: e.value.s, parse(buf).body)),
+                                       ifilter(lambda line: line.startswith(var0) or line.startswith(var1), f))
 
     with open(path.join(package_name, '__init__.py')) as f:
         __author__, __version__ = get_vals('__version__', '__author__')
