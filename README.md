@@ -18,20 +18,25 @@ Both provide tests (unittest) and support for:
 
 ### Generates
 
-    tree bar
-
+    $ tree -a bar --charset=ascii
     bar
-    ├── bar
-    │   └── __init__.py
-    ├── requirements.txt
-    └── setup.py
+    |-- bar
+    |   `-- __init__.py
+    |-- .editorconfig
+    |-- .gitignore
+    |-- __init__.py
+    |-- logging.conf
+    |-- README.md
+    |-- requirements.txt
+    `-- setup.py
     
-    1 directory, 3 files
+    1 directory, 8 files
 
 ## Usage
 
-    usage: generate_scaffold.py [-h] -n NAME [-a AUTHOR] [-d DESCRIPTION]
-                                [-v VERSION] [-t] [-o OUTPUT_DIRECTORY] [-s]
+    $ python -m python_package_gen -h
+    usage: [-h] -n NAME [-a AUTHOR] [-d DESCRIPTION] [-v VERSION] [-t]
+           [-o OUTPUT_DIRECTORY] [-s]
     
     Generate project scaffold
     

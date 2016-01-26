@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 
 __author__ = 'Samuel Marks'
-__version__ = '0.3.4'
+__version__ = '0.4.0'
