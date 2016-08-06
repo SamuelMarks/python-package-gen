@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from os import path
-from argparse import ArgumentParser
+from argparse import ArgumentParser, FileType
 from tempfile import gettempdir
-from time import time
+from time import ctime
 
 from __init__ import __author__
 from Scaffold import Scaffold
@@ -16,8 +16,8 @@ def _build_parser():
     parser.add_argument('-d', '--description', help='Description', default='')
     parser.add_argument('-v', '--version', help='Version number [0.0.1]', default='0.0.1')
     parser.add_argument('-t', '--tests', help='Generate unittests [True]', default=True, action='store_true')
-    parser.add_argument('-o', '--output-directory', help='Directory to extract to [tempdir/time()]',
-                        default=path.join(gettempdir(), str(int(time()))))
+    parser.add_argument('-o', '--output-directory', help='Directory to extract to [tempdir/ctime()]',
+                        default=path.join(gettempdir(), str(ctime())), type=FileType('d'))
     parser.add_argument('-s', '--single-file', help='single-file project [False]',
                         default=False, action='store_true')
     return parser
