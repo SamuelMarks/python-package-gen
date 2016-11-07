@@ -11,7 +11,7 @@ from Scaffold import Scaffold
 
 def is_dir(dirname):
     """Checks if a path is an actual directory"""
-    if not path.isdir(dirname):
+    if path.exists(dirname) and not path.isdir(dirname):
         raise ArgumentTypeError("{0} is not a directory".format(dirname))
     return dirname
 
