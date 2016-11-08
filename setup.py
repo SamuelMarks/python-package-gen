@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from os import path, listdir
+from os import path, listdir, environ
 from functools import partial
 from itertools import imap, ifilter
 from ast import parse
@@ -17,7 +17,9 @@ if __name__ == '__main__':
     to_funcs = lambda *paths: (partial(path.join, path.dirname(__file__), package_name, *paths),
                                partial(path.join, get_python_lib(prefix=''), package_name, *paths))
 
-    templates_config_join, templates_config_install_dir = to_funcs('templates', 'config')
+    _data_join, _data_install_dir = to_funcs('_data')
+    templates_cfg_join, templates_cfg_install_dir = to_funcs('templates', 'config')
+    templates_data_join, templates_install_dir = to_funcs('templates', 'config', '_data')
 
     setup(
         name=package_name,
@@ -25,8 +27,11 @@ if __name__ == '__main__':
         version=__version__,
         test_suite=package_name + '.tests',
         packages=find_packages(),
-        package_dir={package_name: package_name},
+        # package_dir={package_name: package_name},
         data_files=[
-            (templates_config_install_dir(), map(templates_config_join, listdir(templates_config_join())))
+            (templates_cfg_install_dir(), [templates_cfg_join(f) for f in listdir(templates_cfg_join())
+                                           if path.isfile(f)]),
+            (templates_install_dir(), map(templates_data_join, listdir(templates_data_join()))),
+            (_data_install_dir(), map(_data_join, listdir(_data_join())))
         ]
     )

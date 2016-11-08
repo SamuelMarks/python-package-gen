@@ -1,5 +1,6 @@
 from __future__ import absolute_import, print_function
 from argparse import Namespace, ArgumentError
+from functools import partial
 from tempfile import gettempdir
 from time import ctime
 from unittest import TestCase, main as unittest_main
@@ -14,11 +15,12 @@ try:
 except ImportError:
     imap = map
 
-from python_package_gen.utils import it_consumes
+from python_package_gen.utils import it_consumes, listfiles, templates_pkg_join
 
 
 class PackageGenTest(TestCase):
-    default_files = 'logging.conf', 'README.md', '.editorconfig', '.gitignore', 'requirements.txt', 'setup.py'
+    default_root_files = listfiles(templates_pkg_join)
+    default_data_files = listfiles(partial(path.join, path.dirname(templates_pkg_join('_data'))))
 
     valid_mocks = (Namespace(author='Samuel Marks',
                              description='Description',
@@ -36,11 +38,11 @@ class PackageGenTest(TestCase):
                                tests=True,
                                version='0.0.1'),)
 
-    @classmethod
+    '''@classmethod
     def tearDownClass(cls):
         (lambda f: it_consumes(imap(f, cls.valid_mocks)) and it_consumes(imap(f, cls.invalid_mocks)))(
             lambda m: m.output_directory and path.isdir(m.output_directory) and rmtree(m.output_directory)
-        )
+        )'''
 
     def test_valid_mocks(self):
         def run_cli_args(cli_args):
@@ -51,7 +53,15 @@ class PackageGenTest(TestCase):
             scaffold.to_single_file()
 
             self.assertTrue(path.isdir(cli_args.output_directory))
-            self.assertItemsEqual((cli_args.name,) + self.default_files, listdir(cli_args.output_directory))
+            pkg_dir = path.join(cli_args.output_directory, cli_args.name)
+            print('pkg_dir =',pkg_dir)
+            self.assertTrue(path.isdir(pkg_dir))
+            self.assertItemsEqual(self.default_root_files, listfiles(pkg_dir))
+
+            _data_dir = path.join(cli_args.output_directory, '_data')
+            self.assertTrue(path.isdir(_data_dir))
+            self.assertItemsEqual(self.default_data_files, listdir(_data_dir))
+
             module_name_dir = path.join(cli_args.output_directory, cli_args.name)
             self.assertTrue(path.isdir(module_name_dir))
             self.assertItemsEqual(('__init__.py',), listdir(module_name_dir))
