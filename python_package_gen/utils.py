@@ -29,4 +29,4 @@ templates_pkg_join = partial(path.join, path.join(get_python_lib(
     else environ.get('VIRTUAL_ENV')),
     'python_package_gen', 'templates'))
 
-change_to_module_name = lambda s: s.replace('-', '_').lower()
+to_module_name = lambda s: s.replace('-', '_').lower()

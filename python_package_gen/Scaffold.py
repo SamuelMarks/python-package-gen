@@ -11,11 +11,11 @@ except NameError:
 
 from shutil import move
 
-from python_package_gen.utils import it_consumes, templates_pkg_join, listfiles, change_to_module_name
+from python_package_gen.utils import it_consumes, templates_pkg_join, listfiles, to_module_name
 
 from utils import OTemplate
 
-Tree = namedtuple('Tree', 'pkg_dir fnames to_subdir')
+Tree = namedtuple('Tree', ('pkg_dir', 'fnames', 'to_subdir'))
 
 
 class Scaffold(object):
@@ -26,12 +26,16 @@ class Scaffold(object):
                     namedtuple('Argument', 'dest option_strings metavar')('{!r}'.format(arg), None, None), 'required'
                 )
 
-        cmd_args['package_name'] = change_to_module_name(cmd_args['name'])
-        cmd_args['output_directory'] = path.join(cmd_args['output_directory'], cmd_args['package_name'])
+        cmd_args['package_name'] = to_module_name(cmd_args['name'])
         if cmd_args['package_name'] != cmd_args['name']:
-            print('Module name invalid. {!r} renamed to: {!r}'.format(path.join(cmd_args['output_directory'], cmd_args['name']),
-                                                 cmd_args['output_directory']))
+            prev_output_directory = cmd_args['output_directory']
+            cmd_args['output_directory'] = path.join(cmd_args['output_directory'], cmd_args['package_name'])
+            print('Module name invalid. {!r} renamed to: {!r}'.format(
+                prev_output_directory, cmd_args['output_directory']))
 
+        self.package_name = cmd_args['package_name']
+        self.output_directory = cmd_args['output_directory']
+        self.single_file = cmd_args['single_file']
         it_consumes(setattr(self, k, v) for k, v in cmd_args.iteritems())  # Yay: Ruby!
         self.cmd_args = cmd_args
 
@@ -42,15 +46,16 @@ class Scaffold(object):
         :returns (Tree, Tree, Tree)
         """
 
-        return (Tree(templates_pkg_join('config'), listdir(templates_pkg_join('config')), tuple()),
-                Tree(templates_pkg_join('config', '_data'), listdir(templates_pkg_join('config', '_data')),
-                     (self.package_name, '_data')),
-                Tree(templates_pkg_join(), listfiles(templates_pkg_join), (self.package_name,))
-                )
+        return (
+            Tree(pkg_dir=templates_pkg_join('config'), fnames=listdir(templates_pkg_join('config')),
+                 to_subdir=tuple()),
+            Tree(pkg_dir=templates_pkg_join('config', '_data'), fnames=listdir(templates_pkg_join('config', '_data')),
+                 to_subdir=(self.package_name, '_data',)),
+            Tree(pkg_dir=templates_pkg_join(), fnames=listfiles(templates_pkg_join), to_subdir=(self.package_name,))
+        )
 
     def create_files_and_folders(self):
         print('Output directory: {!r}'.format(path.dirname(self.output_directory)))
-        print('self.tree =', self.trees)
 
         if path.isdir(self.output_directory):
             if next(walk('.')) != ('.', [], []) and not (
@@ -74,9 +79,9 @@ class Scaffold(object):
                 with open(pkg_fname, 'rt') as f_src, open(to_loc, 'wt') as f_dst:
                     f_dst.write(OTemplate(f_src.read()).substitute(**self.cmd_args))
         setup_py = path.join(self.output_directory, self.package_name, 'setup.py')
-        to_setup_py = path.join(path.dirname(path.dirname(setup_py)), 'setup.py')
-        print('Writing to: {relative_filepath!r}...'.format(relative_filepath=to_setup_py))
-        move(setup_py, to_setup_py)
+        new_setup_py = path.join(path.dirname(path.dirname(setup_py)), 'setup.py')
+        print('Writing to: {relative_filepath!r}...'.format(relative_filepath=new_setup_py))
+        move(setup_py, new_setup_py)
 
     def to_single_file(self):
         if not self.single_file:
