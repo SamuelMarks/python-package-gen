@@ -9,14 +9,28 @@ from __init__ import __author__
 from Scaffold import Scaffold
 
 
-def is_dir(dirname):
-    """Checks if a path is an actual directory"""
-    if path.exists(dirname) and not path.isdir(dirname):
-        raise ArgumentTypeError("{0} is not a directory".format(dirname))
-    return dirname
+def is_dir(dir_path):
+    """
+    Checks if a path is an actual directory
+
+    :param dir_path: directory path
+    :type dir_path: str
+
+    :returns dir_path
+    :rtype str
+    """
+    if path.exists(dir_path) and not path.isdir(dir_path):
+        raise ArgumentTypeError("'{}' is not a directory".format(dir_path))
+    return dir_path
 
 
 def _build_parser():
+    """
+    Build argparse parser object
+
+    :returns argparse parser object
+    :rtype ArgumentParser
+    """
     parser = ArgumentParser(description='Generate project scaffold')
     parser.add_argument('-n', '--name', help='Package name', required=True)
     parser.add_argument('-a', '--author', help='Author name [{}]'.format(__author__), default=__author__)  # :P
@@ -26,6 +40,9 @@ def _build_parser():
     parser.add_argument('-o', '--output-directory', help='Directory to extract to [tempdir/ISO-time with s/:/_]',
                         default=path.join(gettempdir(), datetime.now().isoformat().replace(':', '_')), type=is_dir)
     parser.add_argument('-s', '--single-file', help='single-file project [False]',
+                        default=False, action='store_true')
+    parser.add_argument('-f', '--flatten',
+                        help='on bad module-name, generate p-kg/p_kg,p-kg/setup.py not p-kg/p_kg/setup.py [False]',
                         default=False, action='store_true')
     return parser
 

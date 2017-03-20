@@ -20,6 +20,12 @@ Tree = namedtuple('Tree', ('pkg_dir', 'fnames', 'to_subdir'))
 
 class Scaffold(object):
     def __init__(self, cmd_args):
+        """
+        Generate package scaffold
+
+        :param cmd_args: command-line arguments from argparse
+        :type cmd_args: dict
+        """
         for arg in ('name', 'output_directory'):
             if not cmd_args[arg]:
                 raise ArgumentError(
@@ -27,25 +33,31 @@ class Scaffold(object):
                 )
 
         cmd_args['package_name'] = to_module_name(cmd_args['name'])
-        if cmd_args['package_name'] != cmd_args['name']:
+        self.flatten = cmd_args['flatten']  # type: bool
+        self.pkg_rename = cmd_args['package_name'] != cmd_args['name']
+        if self.pkg_rename:
             prev_output_directory = cmd_args['output_directory']
-            cmd_args['output_directory'] = path.join(cmd_args['output_directory'], cmd_args['package_name'])
+            if self.flatten:
+                pass
+            else:
+                cmd_args['output_directory'] = path.join(cmd_args['output_directory'], cmd_args['package_name'])
             print('Module name invalid. {!r} renamed to: {!r}'.format(
                 prev_output_directory, cmd_args['output_directory']))
 
-        self.package_name = cmd_args['package_name']
-        self.output_directory = cmd_args['output_directory']
-        self.single_file = cmd_args['single_file']
+        self.package_name = cmd_args['package_name']  # type: str
+        self.output_directory = cmd_args['output_directory']  # type: str
+        self.single_file = cmd_args['single_file']  # type: bool
+
         it_consumes(setattr(self, k, v) for k, v in cmd_args.iteritems())  # Yay: Ruby!
-        self.cmd_args = cmd_args
+        self.cmd_args = cmd_args  # type: dict
 
         self.trees = self.gen_tree()
 
     def gen_tree(self):
         """
+        Generate tree of template_path=>new-package-directory
         :returns (Tree, Tree, Tree)
         """
-
         return (
             Tree(pkg_dir=templates_pkg_join('config'), fnames=listdir(templates_pkg_join('config')),
                  to_subdir=tuple()),
@@ -55,6 +67,9 @@ class Scaffold(object):
         )
 
     def create_files_and_folders(self):
+        """
+        Create files and folders for the package in proper, standardised Python structure.
+        """
         print('Output directory: {!r}'.format(path.dirname(self.output_directory)))
 
         if path.isdir(self.output_directory):
@@ -84,6 +99,9 @@ class Scaffold(object):
         move(setup_py, new_setup_py)
 
     def to_single_file(self):
+        """
+        Modify package to be a single-file package, i.e.: without module_name/__init__.py but module_name.py.
+        """
         if not self.single_file:
             return
 
