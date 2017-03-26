@@ -32,14 +32,12 @@ class Scaffold(object):
                     namedtuple('Argument', 'dest option_strings metavar')('{!r}'.format(arg), None, None), 'required'
                 )
 
-        cmd_args['package_name'] = to_module_name(cmd_args['name'])
+        cmd_args['package_name'] = to_module_name(cmd_args['name'])  # type: str
         self.flatten = cmd_args['flatten']  # type: bool
         self.pkg_rename = cmd_args['package_name'] != cmd_args['name']
         if self.pkg_rename:
             prev_output_directory = cmd_args['output_directory']
-            if self.flatten:
-                pass
-            else:
+            if not self.flatten:
                 cmd_args['output_directory'] = path.join(cmd_args['output_directory'], cmd_args['package_name'])
             print('Module name invalid. {!r} renamed to: {!r}'.format(
                 prev_output_directory, cmd_args['output_directory']))
