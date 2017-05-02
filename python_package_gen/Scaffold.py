@@ -45,6 +45,7 @@ class Scaffold(object):
         self.package_name = cmd_args['package_name']  # type: str
         self.output_directory = cmd_args['output_directory']  # type: str
         self.single_file = cmd_args['single_file']  # type: bool
+        self.description = cmd_args['description']  # type: str
 
         it_consumes(setattr(self, k, v) for k, v in cmd_args.iteritems())  # Yay: Ruby!
         self.cmd_args = cmd_args  # type: dict

@@ -1,5 +1,6 @@
 _0_package_name
 ===============
+_0_description
 
 ## Install dependencies
 

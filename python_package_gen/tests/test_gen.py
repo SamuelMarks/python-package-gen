@@ -29,7 +29,8 @@ class PackageGenTest(TestCase):
                              output_directory=path.join(gettempdir(), datetime.now().isoformat()).replace(':', '_'),
                              single_file=False,
                              tests=True,
-                             version='0.0.1'),)
+                             version='0.0.1',
+                             flatten=False),)
 
     invalid_mocks = (Namespace(author='Samuel Marks',
                                description='Description',
@@ -37,7 +38,8 @@ class PackageGenTest(TestCase):
                                output_directory='',
                                single_file=False,
                                tests=True,
-                               version='0.0.1'),)
+                               version='0.0.1',
+                               flatten=False),)
 
     @classmethod
     def tearDownClass(cls):

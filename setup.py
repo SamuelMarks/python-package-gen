@@ -27,6 +27,7 @@ if __name__ == '__main__':
         version=__version__,
         test_suite=package_name + '.tests',
         packages=find_packages(),
+        install_requires=['pyyaml'],
         # package_dir={package_name: package_name},
         data_files=[
             (templates_cfg_install_dir(), [templates_cfg_join(f) for f in listdir(templates_cfg_join())
