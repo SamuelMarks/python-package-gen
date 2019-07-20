@@ -1,12 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import, print_function
+
 from argparse import Namespace, ArgumentError
 from datetime import datetime
 from functools import partial
+from os import path, listdir
+from shutil import rmtree
 from tempfile import gettempdir
 from unittest import TestCase, main as unittest_main
-from os import path, listdir
-
-from shutil import rmtree
 
 from python_package_gen.Scaffold import Scaffold
 
@@ -20,8 +23,8 @@ from python_package_gen.utils import it_consumes, listfiles, templates_pkg_join
 
 
 class PackageGenTest(TestCase):
-    default_root_files = 'README.md', 'requirements.txt', 'setup.py', '.editorconfig', '.gitignore'
-    default_data_files = listfiles(partial(path.join, templates_pkg_join('config', '_data')))
+    default_root_files = '.editorconfig', '.gitignore', 'README.md', 'requirements.txt', 'setup.py'
+    default_data_files = sorted(listfiles(partial(path.join, templates_pkg_join('config', '_data'))))
 
     valid_mocks = (Namespace(author='Samuel Marks',
                              description='Description',
@@ -58,16 +61,16 @@ class PackageGenTest(TestCase):
             self.assertTrue(path.isdir(cli_args.output_directory))
             pkg_dir = partial(path.join, cli_args.output_directory, scaffold.cmd_args['package_name'])
             self.assertTrue(path.isdir(pkg_dir()))
-            self.assertItemsEqual(self.default_root_files, listfiles(pkg_dir))
+            self.assertEqual(self.default_root_files, sorted(listfiles(pkg_dir)))
 
             _data_dir = partial(path.join, pkg_dir(), scaffold.cmd_args['package_name'], '_data')
             self.assertTrue(path.isdir(_data_dir()))
-            self.assertItemsEqual(self.default_data_files, listdir(_data_dir()))
+            self.assertEqual(self.default_data_files, sorted(listdir(_data_dir())))
 
             module_name_dir = partial(path.join, cli_args.output_directory, scaffold.cmd_args['package_name'],
                                       scaffold.cmd_args['package_name'])
             self.assertTrue(path.isdir(module_name_dir()))
-            self.assertItemsEqual(('__init__.py',), listfiles(module_name_dir))
+            self.assertEqual(('__init__.py',), tuple(sorted(listfiles(module_name_dir))))
 
             return scaffold
 

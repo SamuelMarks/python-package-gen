@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from collections import deque
 from distutils.sysconfig import get_python_lib
 from functools import partial
@@ -6,9 +8,12 @@ from os import listdir, environ, path
 from string import Template
 
 try:
-    from platform import linux_distribution
+    from platform import linux_distribution  # Python 3.5 deprecated this
 except ImportError:
-    linux_distribution = lambda: (None,) * 3
+    try:
+        from distro import linux_distribution  # Recommended this instead
+    except ImportError:
+        linux_distribution = lambda: (None,) * 3
 
 
 class OTemplate(Template):

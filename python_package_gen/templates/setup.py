@@ -1,9 +1,18 @@
-from setuptools import setup, find_packages
-from os import path, listdir
-from functools import partial
-from itertools import imap, ifilter
+# -*- coding: utf-8 -*-
+
 from ast import parse
 from distutils.sysconfig import get_python_lib
+from functools import partial
+from os import path, listdir
+from platform import python_version_tuple
+
+from setuptools import setup, find_packages
+
+if python_version_tuple()[0] == '3':
+    imap = map
+    ifilter = filter
+else:
+    from itertools import imap, ifilter
 
 if __name__ == '__main__':
     package_name = '_0_package_name'
@@ -27,6 +36,6 @@ if __name__ == '__main__':
         packages=find_packages(),
         package_dir={package_name: package_name},
         data_files=[
-            (_data_install_dir(), map(_data_join, listdir(_data_join())))
+            (_data_install_dir(), list(imap(_data_join, listdir(_data_join()))))
         ]
     )

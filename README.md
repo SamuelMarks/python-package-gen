@@ -1,5 +1,6 @@
 python package gen
 ==================
+![Python version range](https://img.shields.io/badge/python-2.7%E2%80%933.6+-blue.svg)
 
 Simple code-generator using only stdlib. Supports two modes, single file and folder.
 
@@ -10,7 +11,7 @@ Both provide tests (unittest) and support for:
 
 ## Install
 
-    pip install git+https://github.com/SamuelMarks/python-package-gen#egg=python_package_gen
+    pip install https://github.com/SamuelMarks/python-package-gen/zipball/master#egg=python_package_gen
 
 ## Example run
 
@@ -20,23 +21,23 @@ Both provide tests (unittest) and support for:
 
     $ tree -a bar --charset=ascii
     bar
-    |-- bar
-    |   `-- __init__.py
     |-- .editorconfig
     |-- .gitignore
-    |-- __init__.py
-    |-- logging.conf
     |-- README.md
+    |-- bar
+    |   |-- __init__.py
+    |   `-- _data
+    |       `-- logging.yml
     |-- requirements.txt
     `-- setup.py
     
-    1 directory, 8 files
+    2 directories, 7 files
 
 ## Usage
 
     $ python -m python_package_gen -h
-    usage: [-h] -n NAME [-a AUTHOR] [-d DESCRIPTION] [-v VERSION] [-t]
-           [-o OUTPUT_DIRECTORY] [-s]
+    usage: __main__.py [-h] -n NAME [-a AUTHOR] [-d DESCRIPTION] [-v VERSION] [-t]
+                       [-o OUTPUT_DIRECTORY] [-s] [-f]
     
     Generate project scaffold
     
@@ -51,5 +52,7 @@ Both provide tests (unittest) and support for:
                             Version number [0.0.1]
       -t, --tests           Generate unittests [True]
       -o OUTPUT_DIRECTORY, --output-directory OUTPUT_DIRECTORY
-                            Directory to extract to [tempdir/time()]
+                            Directory to extract to [tempdir/ISO-time with s/:/_]
       -s, --single-file     single-file project [False]
+      -f, --flatten         on bad module-name, generate p-kg/p_kg,p-kg/setup.py
+                            not p-kg/p_kg/setup.py [False]

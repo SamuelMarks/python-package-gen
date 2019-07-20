@@ -1,8 +1,13 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import print_function
+
 from argparse import ArgumentError
 from collections import namedtuple
 from fileinput import input as fileinput
 from os import path, walk, makedirs, listdir, rmdir
+
+from six import iteritems
 
 try:
     input = raw_input
@@ -11,9 +16,7 @@ except NameError:
 
 from shutil import move
 
-from python_package_gen.utils import it_consumes, templates_pkg_join, listfiles, to_module_name
-
-from utils import OTemplate
+from python_package_gen.utils import it_consumes, templates_pkg_join, listfiles, to_module_name, OTemplate
 
 Tree = namedtuple('Tree', ('pkg_dir', 'fnames', 'to_subdir'))
 
@@ -47,7 +50,7 @@ class Scaffold(object):
         self.single_file = cmd_args['single_file']  # type: bool
         self.description = cmd_args['description']  # type: str
 
-        it_consumes(setattr(self, k, v) for k, v in cmd_args.iteritems())  # Yay: Ruby!
+        it_consumes(setattr(self, k, v) for k, v in iteritems(cmd_args))  # Yay: Ruby!
         self.cmd_args = cmd_args  # type: dict
 
         self.trees = self.gen_tree()

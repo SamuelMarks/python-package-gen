@@ -1,12 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+from argparse import ArgumentParser, ArgumentTypeError
 from datetime import datetime
 from os import path
-from argparse import ArgumentParser, ArgumentTypeError
 from tempfile import gettempdir
 
-from __init__ import __author__
-from Scaffold import Scaffold
+from python_package_gen import __author__
+from python_package_gen.Scaffold import Scaffold
 
 
 def is_dir(dir_path):

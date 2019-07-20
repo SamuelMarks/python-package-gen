@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import logging
+from logging.config import dictConfig as _dictConfig
+from os import path
 
 import yaml
-import logging
-
-from os import path
-from logging.config import dictConfig as _dictConfig
 
 __author__ = '_0_author'
 __version__ = '_0_version'

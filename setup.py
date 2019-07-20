@@ -1,9 +1,18 @@
-from setuptools import setup, find_packages
-from os import path, listdir, environ
-from functools import partial
-from itertools import imap, ifilter
+# -*- coding: utf-8 -*-
+
 from ast import parse
 from distutils.sysconfig import get_python_lib
+from functools import partial
+from os import path, listdir
+from platform import python_version_tuple
+
+from setuptools import setup, find_packages
+
+if python_version_tuple()[0] == '3':
+    imap = map
+    ifilter = filter
+else:
+    from itertools import imap, ifilter
 
 if __name__ == '__main__':
     package_name = 'python_package_gen'
@@ -25,14 +34,15 @@ if __name__ == '__main__':
         name=package_name,
         author=__author__,
         version=__version__,
+        install_requires=['pyyaml'],
         test_suite=package_name + '.tests',
         packages=find_packages(),
-        install_requires=['pyyaml'],
-        # package_dir={package_name: package_name},
+        package_dir={package_name: package_name},
         data_files=[
-            (templates_cfg_install_dir(), [templates_cfg_join(f) for f in listdir(templates_cfg_join())
+            (templates_cfg_install_dir(), [templates_cfg_join(f)
+                                           for f in listdir(templates_cfg_join())
                                            if path.isfile(f)]),
-            (templates_install_dir(), map(templates_data_join, listdir(templates_data_join()))),
-            (_data_install_dir(), map(_data_join, listdir(_data_join())))
+            (templates_install_dir(), list(imap(templates_data_join, listdir(templates_data_join())))),
+            (_data_install_dir(), list(imap(_data_join, listdir(_data_join()))))
         ]
     )
