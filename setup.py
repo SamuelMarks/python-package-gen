@@ -1,48 +1,156 @@
 # -*- coding: utf-8 -*-
 
-from ast import parse
-from distutils.sysconfig import get_python_lib
+"""
+setup.py implementation, interesting because it parsed the first __init__.py and
+    extracts the `__author__` and `__version__`
+"""
+
+import sys
+from ast import Assign, Name, parse
 from functools import partial
-from os import path, listdir
-from platform import python_version_tuple
+from operator import attrgetter
+from itertools import chain
+from os import listdir, path
+from os.path import extsep
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
-if python_version_tuple()[0] == '3':
-    imap = map
-    ifilter = filter
+if sys.version_info[:2] >= (3, 12):
+    from ast import Del as Str
 else:
-    from itertools import imap, ifilter
+    from ast import Str
 
-if __name__ == '__main__':
-    package_name = 'python_package_gen'
+    if sys.version_info[0] == 2:
+        from itertools import ifilter as filter
+        from itertools import imap as map
 
-    with open(path.join(package_name, '__init__.py')) as f:
-        __author__, __version__ = imap(
-            lambda buf: next(imap(lambda e: e.value.s, parse(buf).body)),
-            ifilter(lambda line: line.startswith('__version__') or line.startswith('__author__'), f)
+if sys.version_info[:2] > (3, 7):
+    from ast import Constant
+else:
+    from ast import expr
+
+    # Constant. Will never be used in Python < 3.8
+    Constant = type("Constant", (expr,), {})
+
+
+package_name_verbatim = "python-package-gen"
+package_name = package_name_verbatim.replace("-", "_")
+
+with open(
+    path.join(path.dirname(__file__), "README{extsep}md".format(extsep=extsep)), "rt"
+) as fh:
+    long_description = fh.read()
+
+
+def gen_join_on_pkg_name(*paths):
+    """
+    Create a function that joins on `os.path.join` from the package name onward
+
+    :param paths: one or more str, referring to relative folder names
+    :type paths: ```*paths```
+
+    :return: function that joins on `os.path.join` from the package name onward
+    :rtype: ```Callable[tuple[str, ...], str]```
+    """
+    return partial(path.join, path.dirname(__file__), package_name, *paths)
+
+
+def main():
+    """Main function for setup.py; this actually does the installation"""
+    with open(
+        path.join(
+            path.abspath(path.dirname(__file__)),
+            package_name,
+            "__init__{extsep}py".format(extsep=extsep),
         )
+    ) as f:
+        parsed_init = parse(f.read())
 
-    to_funcs = lambda *paths: (partial(path.join, path.dirname(__file__), package_name, *paths),
-                               partial(path.join, get_python_lib(prefix=''), package_name, *paths))
+    __author__, __version__, __description__ = map(
+        lambda node: node.value if isinstance(node, Constant) else node.s,
+        filter(
+            lambda node: isinstance(node, (Constant, Str)),
+            map(
+                attrgetter("value"),
+                filter(
+                    lambda node: isinstance(node, Assign)
+                    and any(
+                        filter(
+                            lambda name: isinstance(name, Name)
+                            and name.id
+                            in frozenset(
+                                ("__author__", "__version__", "__description__")
+                            ),
+                            node.targets,
+                        )
+                    ),
+                    parsed_init.body,
+                ),
+            ),
+        ),
+    )
 
-    _data_join, _data_install_dir = to_funcs('_data')
-    templates_cfg_join, templates_cfg_install_dir = to_funcs('templates', 'config')
-    templates_data_join, templates_install_dir = to_funcs('templates', 'config', '_data')
+    _data_join = gen_join_on_pkg_name("_data")
+    templates_cfg_join = gen_join_on_pkg_name("templates", "config")
+    templates_data_join = gen_join_on_pkg_name("templates", "config", "_data")
 
     setup(
-        name=package_name,
+        name=package_name_verbatim,
         author=__author__,
+        author_email="807580+SamuelMarks@users.noreply.github.com",
         version=__version__,
-        install_requires=['pyyaml'],
-        test_suite=package_name + '.tests',
+        url="https://github.com/offscale/{}".format(package_name_verbatim),
+        description=__description__,
+        long_description=long_description,
+        long_description_content_type="text/markdown",
+        classifiers=[
+            "Development Status :: 7 - Inactive",
+            "Intended Audience :: Developers",
+            "Topic :: Software Development",
+            "Topic :: Software Development :: Libraries :: Python Modules",
+            "License :: CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+            "License :: OSI Approved :: Apache Software License",
+            "License :: OSI Approved :: MIT License",
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 2",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
+            "Programming Language :: Python :: 3.7",
+            "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11",
+            "Programming Language :: Python :: 3.12",
+            "Programming Language :: Python :: 3.13",
+        ],
+        license="(Apache-2.0 OR MIT OR CC0-1.0)",
+        license_files=["LICENSE-APACHE", "LICENSE-MIT", "LICENSE-CC0"],
+        test_suite="{}{}tests".format(package_name, path.extsep),
         packages=find_packages(),
-        package_dir={package_name: package_name},
-        data_files=[
-            (templates_cfg_install_dir(), [templates_cfg_join(f)
-                                           for f in listdir(templates_cfg_join())
-                                           if path.isfile(f)]),
-            (templates_install_dir(), list(imap(templates_data_join, listdir(templates_data_join())))),
-            (_data_install_dir(), list(imap(_data_join, listdir(_data_join()))))
-        ]
+        install_requires=["pyyaml"],
+        package_data={
+            package_name: list(
+                chain.from_iterable(
+                    map(
+                        lambda folder_join: map(
+                            folder_join,
+                            listdir(folder_join()),
+                        ),
+                        (_data_join, templates_cfg_join, templates_data_join),
+                    )
+                )
+            )
+        },
+        include_package_data=True,
     )
+
+
+def setup_py_main():
+    """Calls main if `__name__ == '__main__'`"""
+    if __name__ == "__main__":
+        main()
+
+
+setup_py_main()

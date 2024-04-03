@@ -1,6 +1,9 @@
 python package gen
 ==================
-![Python version range](https://img.shields.io/badge/python-2.7%E2%80%933.6+-blue.svg)
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech)
+![Python version range](https://img.shields.io/badge/python-2.7%20|%203.5%20|%203.6%20|%203.7%20|%203.8%20|%203.9%20|%203.10%20|%203.11%20|%203.12%20|%203.13-blue.svg)
+[![License](https://img.shields.io/badge/license-Apache--2.0%20OR%20MIT%20OR%20CC0--1.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Simple code-generator using only stdlib. Supports two modes, single file and folder.
 
@@ -56,3 +59,19 @@ Both provide tests (unittest) and support for:
       -s, --single-file     single-file project [False]
       -f, --flatten         on bad module-name, generate p-kg/p_kg,p-kg/setup.py
                             not p-kg/p_kg/setup.py [False]
+
+## License
+
+Licensed under any of:
+
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
+- CC0 license ([LICENSE-CC0](LICENSE-CC0) or <https://creativecommons.org/publicdomain/zero/1.0/legalcode>)
+
+at your option.
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+licensed as above, without any additional terms or conditions.
