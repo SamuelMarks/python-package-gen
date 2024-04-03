@@ -9,6 +9,7 @@ import yaml
 
 __author__ = "_0_author"
 __version__ = "_0_version"
+__description__ = "_0_description"
 
 
 def get_logger(name=None):

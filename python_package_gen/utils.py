@@ -28,7 +28,7 @@ listfiles = lambda dir_join: filter(
     lambda p: path.isfile(dir_join(p))
     and path.splitext(p)[1] not in frozenset((".pyc", ".pyd", ".so", ".pyo")),
     listdir(dir_join()),
-)
+)  # type: Callable[[str], str]
 
 templates_pkg_join = partial(
     path.join,
@@ -36,8 +36,8 @@ templates_pkg_join = partial(
         path.dirname(__file__),
         "templates",
     ),
-)
+)  # type: Callable[[str, ...], str]
 
-to_module_name = lambda s: s.replace("-", "_").lower()
+to_module_name = lambda s: s.replace("-", "_").lower()   # type: Callable[[str], str]
 
-__all__ = ["it_consumes", "listfiles", "templates_pkg_join", "to_module_name"]
+__all__ = ["OTemplate", "it_consumes", "listfiles", "templates_pkg_join", "to_module_name"]

@@ -90,9 +90,9 @@ def main():
         ),
     )
 
-    _data_join = gen_join_on_pkg_name("_data")
-    templates_cfg_join = gen_join_on_pkg_name("templates", "config")
-    templates_data_join = gen_join_on_pkg_name("templates", "config", "_data")
+    _data_join = gen_join_on_pkg_name("_data")  # type: str
+    templates_cfg_join = gen_join_on_pkg_name("templates", "config")  # type: str
+    templates_data_join = gen_join_on_pkg_name("templates", "config", "_data")   # type: str
 
     setup(
         name=package_name_verbatim,

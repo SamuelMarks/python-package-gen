@@ -8,16 +8,14 @@ from datetime import datetime
 from functools import partial
 from os import path, listdir
 from shutil import rmtree
+from sys import version_info
 from tempfile import gettempdir
 from unittest import TestCase, main as unittest_main
 
 from python_package_gen.Scaffold import Scaffold
 
-try:
-    from itertools import imap, ifilter
-except ImportError:
-    imap = map
-    ifilter = filter
+if version_info[0] == 2:
+    from itertools import imap as map
 
 from python_package_gen.utils import it_consumes, listfiles, templates_pkg_join
 
@@ -65,8 +63,8 @@ class PackageGenTest(TestCase):
     @classmethod
     def tearDownClass(cls):
         (
-            lambda f: it_consumes(imap(f, cls.valid_mocks))
-            and it_consumes(imap(f, cls.invalid_mocks))
+            lambda f: it_consumes(map(f, cls.valid_mocks))
+            and it_consumes(map(f, cls.invalid_mocks))
         )(
             lambda m: m.output_directory
             and path.isdir(m.output_directory)
@@ -107,7 +105,7 @@ class PackageGenTest(TestCase):
 
             return scaffold
 
-        it_consumes(imap(run_cli_args, self.valid_mocks))
+        it_consumes(map(run_cli_args, self.valid_mocks))
 
     def test_invalid_mocks(self):
         def run_cli_args(cli_args):
@@ -119,7 +117,7 @@ class PackageGenTest(TestCase):
 
             self.assertFalse(path.isdir(cli_args.output_directory))
 
-        it_consumes(imap(run_cli_args, self.invalid_mocks))
+        it_consumes(map(run_cli_args, self.invalid_mocks))
 
 
 if __name__ == "__main__":
